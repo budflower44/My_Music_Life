@@ -1,0 +1,9 @@
+package com.mml.www.repository;
+
+public interface SpotifyDAO {
+	
+	String compareToDBDataAlbums(String id);
+
+	void insertDBAlbums(AlbumsVO albumsVO);
+	
+}

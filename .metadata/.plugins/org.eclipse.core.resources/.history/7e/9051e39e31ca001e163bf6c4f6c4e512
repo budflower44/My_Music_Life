@@ -1,0 +1,8 @@
+package com.mml.www.service;
+
+public interface SpotifyAPIService {
+
+	void insertDBAlbums(AlbumsVO albumsVO);
+
+	
+}

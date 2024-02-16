@@ -1,0 +1,25 @@
+package com.mml.www.handler;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import com.mml.www.service.SpotifyAPIService;
+
+@Component
+public class AlbumsJSONHandler {
+	
+	@Autowired
+	private SpotifyAPIService ssv; 
+	
+	public ResponseEntity<MultiValueMap<String, String>> albumsJSONHandler(String albumsdata){
+		
+		MultiValueMap<String, String> albumsresultMap = new LinkedMultiValueMap<>();
+		
+		
+		return ResponseEntity.ok(albumsresultMap);
+	}
+	
+}
