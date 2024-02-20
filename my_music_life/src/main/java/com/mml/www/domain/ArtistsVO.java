@@ -35,18 +35,18 @@ public class ArtistsVO {
 	public ArtistsVO(String id, String externalUrls, String followersHref, long followersTotal, String genres,
 			String href, String imagesUrl, int imagesHeight, int imagesWidth, String name, long popularity, String type,
 			String uri) {
-		this.id = id;
-		this.externalUrls = externalUrls;
-		this.followersHref = followersHref;
+		this.id = id != null ? id : "";
+		this.externalUrls = externalUrls != null ? externalUrls : "";
+		this.followersHref = followersHref != null ? followersHref : "";
 		this.followersTotal = followersTotal;
-		this.genres = genres;
-		this.href = href;
-		this.imagesUrl = imagesUrl;
-		this.imagesHeight = imagesHeight;
-		this.imagesWidth = imagesWidth;
-		this.name = name;
+		this.genres = genres != null ? genres : "";
+		this.href = href != null ? href : "";
+		this.imagesUrl = imagesUrl != null ? imagesUrl : "";
+		this.imagesHeight = imagesHeight < 640 ? imagesHeight : 640;
+		this.imagesWidth = imagesWidth < 640 ? imagesWidth : 640;
+		this.name = name != null ? name : "";
 		this.popularity = popularity;
-		this.type = type;
-		this.uri = uri;
+		this.type = type != null ? type : "";
+		this.uri = uri != null ? uri : "";
 	}
 }

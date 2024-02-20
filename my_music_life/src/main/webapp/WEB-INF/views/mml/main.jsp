@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,8 +7,6 @@
 </head>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 <style>
 body{
 	background-color : black;
@@ -89,14 +86,21 @@ body{
 	padding-left: 10px;
 	padding-right: 10px;
 }
+.nav {
+    --bs-nav-link-color: white;
+    --bs-nav-link-hover-color: white;
+}
+.navbar{
+	background-color: black;
+}
 .nav-link{
 	color: gold;
 }
 .nav-link:hover {
 	color: white;
 }
-.navbar{
-	background-color: black;
+.nav-link:focus {
+	color: white;
 }
 .table{
 	max-width: 650px;
@@ -114,7 +118,7 @@ body{
 							<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
 						</ul>
 						<form class="d-flex" role="search">
-        					<input class="form-control me-2 " id="searchKeyword" type="search" placeholder="Search" aria-label="Search">
+        					<input class="form-control me-2 " id="searchKeyword" type="search" placeholder="Search" aria-label="Search" onkeypress="searchEnter(e)">
         					<button class="btn" type="button" id="searchBtn">Search</button>
       					</form>
 					</nav>
@@ -126,8 +130,13 @@ body{
 		<div class="ContentsDiv">
 			<div class="contentDiv">
 				<div class="searchDiv">
-				<table id="SearchBox" class="table table-dark table-hover">
-<!-- 					<tr>
+						<ul class="nav nav-underline justify-content-center SearchTab">
+							<li class="nav-item"><a class="nav-link SearchTabAlbums" href="#">Albums</a></li>
+							<li class="nav-item"><a class="nav-link SearchTabArtists" href="#">Artists</a></li>
+							<li class="nav-item"><a class="nav-link SearchTabTracks" href="#">Tracks</a></li>
+						</ul>
+						<table id="SearchBox" class="table table-dark table-hover">
+ 					<tr>
 						<th></th>
 						<th>Artist</th>
 						<th>Type</th>
@@ -144,7 +153,7 @@ body{
 						<td>Release Date</td>
 						<td>Name</td>
 						<td><i class="bi bi-play-circle-fill"></i></td>
-					</tr> -->
+					</tr> 
 				</table>
 				</div>
 			</div>
@@ -152,11 +161,17 @@ body{
 		</div>
 	</div>
 	<div class="FooterDiv">
-		<div class="MusicBox" id="MusicBox"></div>
+		<div class="MusicBox" id="MusicBox">
+				<iframe style="border-radius: 12px"
+					src="https://open.spotify.com/embed/artist/6VuMaDnrHyPL1p4EHjYLi7?utm_source=generator&autoplay=1"
+					width="100%" height="152" frameBorder="0" allowfullscreen=""
+					allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+					loading="lazy"> </iframe>
+			</div>
 	</div>
 	<div></div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 <script src="/resources/js/spotifyAPI.js"></script>
 
 </body>

@@ -1,27 +1,22 @@
 package com.mml.www.controller;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mml.www.config.AuthSpotifyAPIConfig;
-import com.mml.www.domain.AlbumsVO;
 import com.mml.www.handler.AlbumsJSONHandler;
+import com.mml.www.handler.ArtistsJSONHandler;
+import com.mml.www.handler.TracksJSONHandler;
 import com.mml.www.service.SpotifyAPIService;
 
 import lombok.RequiredArgsConstructor;
@@ -56,6 +51,12 @@ public class SpotifyAPIController {
 	
 	@Autowired
 	private AlbumsJSONHandler albumsJSON;
+	
+	@Autowired
+	private ArtistsJSONHandler artistsJSON;
+	
+	@Autowired
+	private TracksJSONHandler tracksJSON;
 
 	@GetMapping("/main")
 	public void mainPage() {}
@@ -79,14 +80,14 @@ public class SpotifyAPIController {
 	public ResponseEntity<MultiValueMap<String,String>> searchArtistData(@RequestBody String artistsData) {
 		System.out.print("@@@@@@@@@@@@@@@@ artistsData >> "+artistsData);
 		
-		return albumsJSON.albumsJSONHandler(artistsData);
+		return artistsJSON.artistsJSONHandler(artistsData);
 	} 
 	
 	@PostMapping("/search/tracks")
 	public ResponseEntity<MultiValueMap<String,String>> searchTracksData(@RequestBody String tracksData) {
 		System.out.print("@@@@@@@@@@@@@@@@ tracksData >> "+tracksData);
 		
-		return albumsJSON.albumsJSONHandler(tracksData);
+		return tracksJSON.tracksJSONHandler(tracksData);
 	} 
 	
 }

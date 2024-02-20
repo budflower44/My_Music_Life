@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mml.www.domain.AlbumsVO;
+import com.mml.www.domain.ArtistsVO;
+import com.mml.www.domain.TracksVO;
 import com.mml.www.repository.SpotifyDAO;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,57 @@ public class SpotifyAPIServiceImpl implements SpotifyAPIService {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void insertDBArtists(ArtistsVO artistsVO) {
+		log.info("serviceImpl in");
+		// TODO Auto-generated method stub
+		try {
+			 if (sdao != null) {
+		            String isExistingArtists = sdao.compareToDBDataArtists(artistsVO.getId());
+		            System.out.println("비교 완료 : "+isExistingArtists);
+		            if(isExistingArtists == null) {
+		                sdao.insertDBArtists(artistsVO);
+		            } else if(isExistingArtists != null){
+//		            	sdao.updateDBArtists(artistsVO.getId());
+		            	log.info("DB 업데이트 진행");
+		            }else {		            	
+		            	log.info("DB 넣기 실패");
+		            }
+		        } else {
+		            log.info("sdao 객체가 null입니다.");
+		        }
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void insertDBTracks(TracksVO tracksVO) {
+		log.info("serviceImpl in");
+		// TODO Auto-generated method stub
+		try {
+			 if (sdao != null) {
+		            String isExistingTracks = sdao.compareToDBDataTracks(tracksVO.getId());
+		            System.out.println("비교 완료 : "+isExistingTracks);
+		            if(isExistingTracks == null) {
+		                sdao.insertDBTracks(tracksVO);
+		            } else if(isExistingTracks != null){
+//		            	sdao.updateDBArtists(artistsVO.getId());
+		            	log.info("DB 업데이트 진행");
+		            }else {		            	
+		            	log.info("DB 넣기 실패");
+		            }
+		        } else {
+		            log.info("sdao 객체가 null입니다.");
+		        }
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 	}
 	
 }

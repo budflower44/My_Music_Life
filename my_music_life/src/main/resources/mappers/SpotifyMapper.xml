@@ -18,4 +18,36 @@
 		#{totalTracks}, #{type}, #{uri})
 	</insert>
 	
+	<select id="compareToDBDataArtists" resultType="String">
+		select id from artists where id=#{id}
+	</select>
+	
+	<insert id="insertDBArtists" parameterType="com.mml.www.domain.ArtistsVO">
+		INSERT INTO artists (id, external_urls, followers_href, followers_total, genres, href, 
+		images_url, images_height, images_width, name, popularity, type, uri)
+		VALUES (#{id}, #{externalUrls}, #{followersHref}, #{followersTotal}, #{genres}, #{href}, 
+		#{imagesUrl}, #{imagesHeight}, #{imagesWidth}, #{name}, #{popularity}, #{type}, #{uri})
+	</insert>
+	
+	<select id="compareToDBDataTracks" resultType="String">
+		select id from tracks where id=#{id}
+	</select>
+	
+	<insert id="insertDBTracks" parameterType="com.mml.www.domain.TracksVO">
+		INSERT INTO tracks (album_artists_external_urls, album_artists_href, album_artists_id, 
+		album_artists_name, album_artists_type, album_artists_uri, album_external_urls, album_href, 
+		album_id, album_images_url, album_images_height, album_images_width, album_name, album_release_date, 
+		album_release_date_precision, album_total_tracks, album_type, album_uri, artists_external_urls, 
+		artists_href, artists_id, artists_name, artists_type, artists_uri, id, external_url, disc_number, 
+		duration_ms, explicit, external_ids, href, is_local, name, popularity, preview_url, track_number, 
+		type, uri) 
+		VALUES (#{albumArtistsExternalUrls}, #{albumArtistsHref}, #{albumArtistsId}, #{albumArtistsName}, 
+		#{albumArtistsType}, #{albumArtistsUri}, #{albumExternalUrls}, #{albumHref}, #{albumId}, #{albumImagesUrl}, 
+		#{albumImagesHeight}, #{albumImagesWidth}, #{albumName}, #{albumReleaseDate}, #{albumReleaseDatePrecision}, 
+		#{albumTotalTracks}, #{albumType}, #{albumUri}, #{artistsExternalUrls}, #{artistsHref}, #{artistsId}, 
+		#{artistsName}, #{artistsType}, #{artistsUri}, #{id}, #{externalUrl}, #{discNumber}, #{durationMs}, 
+		#{explicit}, #{externalIds}, #{href}, #{isLocal}, #{name}, #{popularity}, #{previewUrl}, #{trackNumber}, 
+		#{type}, #{uri})
+	</insert>
+	
 </mapper>
