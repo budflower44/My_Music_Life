@@ -1,0 +1,142 @@
+package com.mml.www.service;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mml.www.domain.AlbumsVO;
+import com.mml.www.domain.ArtistsVO;
+import com.mml.www.domain.TracksVO;
+import com.mml.www.repository.SpotifyDAO;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class SpotifyAPIServiceImpl implements SpotifyAPIService {
+	
+	@Autowired
+	private SpotifyDAO sdao;
+
+	@Override
+	public void insertDBAlbums(AlbumsVO albumsVO) {
+		log.info("serviceImpl in");
+		// TODO Auto-generated method stub
+		try {
+			 if (sdao != null) {
+		            String isExistingAlbums = sdao.compareToDBDataAlbums(albumsVO.getId());
+		            System.out.println("비교 완료 : "+isExistingAlbums);
+		            if(isExistingAlbums == null) {
+		                sdao.insertDBAlbums(albumsVO);
+		            } else {
+		                log.info("DB 넣기 실패");
+		            }
+		        } else {
+		            log.info("sdao 객체가 null입니다.");
+		        }
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void insertDBArtists(ArtistsVO artistsVO) {
+		log.info("serviceImpl in");
+		// TODO Auto-generated method stub
+		try {
+			 if (sdao != null) {
+		            String isExistingArtists = sdao.compareToDBDataArtists(artistsVO.getId());
+		            System.out.println("비교 완료 : "+isExistingArtists);
+		            if(isExistingArtists == null) {
+		                sdao.insertDBArtists(artistsVO);
+		            } else if(isExistingArtists != null){
+//		            	sdao.updateDBArtists(artistsVO.getId());
+		            	log.info("DB 업데이트 진행");
+		            }else {		            	
+		            	log.info("DB 넣기 실패");
+		            }
+		        } else {
+		            log.info("sdao 객체가 null입니다.");
+		        }
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void insertDBTracks(TracksVO tracksVO) {
+		log.info("serviceImpl in");
+		// TODO Auto-generated method stub
+		try {
+			 if (sdao != null) {
+		            String isExistingTracks = sdao.compareToDBDataTracks(tracksVO.getId());
+		            System.out.println("비교 완료 : "+isExistingTracks);
+		            if(isExistingTracks == null) {
+		                sdao.insertDBTracks(tracksVO);
+		            } else if(isExistingTracks != null){
+//		            	sdao.updateDBArtists(artistsVO.getId());
+		            	log.info("DB 업데이트 진행");
+		            }else {		            	
+		            	log.info("DB 넣기 실패");
+		            }
+		        } else {
+		            log.info("sdao 객체가 null입니다.");
+		        }
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+	}
+	
+    private String id;
+    private String externalUrls;
+    private String albumType;
+    private String artistsExternalUrls;
+    private String artistsHref;
+    private String artistsId;
+    private String artistsName;
+    private String artistsType;
+    private String artistsUri;
+    private String href;
+    private String imagesUrl;
+    private Integer imagesHeight;
+    private Integer imagesWidth;
+    private String name;
+    private String releaseDate;
+    private String releaseDatePrecision;
+    private int totalTracks;
+    private String type;
+    private String uri;
+    private long likes;
+    private long playCount;
+    private int rankMonth;
+    private int rankWeek;
+    private int rankDay;
+	
+	@Override
+	public Map<String, String> getDetailInfoAlbum(String id) {
+		Map<String, String> infoMap = new HashMap<>();
+		try {
+			AlbumsVO albumVO = sdao.getDetailAlbum(id);
+			infoMap.put("images_url", albumVO.getImagesUrl());
+			infoMap.put("artistName", albumVO.getArtistsName());
+			infoMap.put("name", albumVO.getName());
+			infoMap.put("releaseDate", albumVO.getReleaseDate());
+			infoMap.put("totalTracks", albumVO.getTotalTracks());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("info 잘못 가져옴");
+		}
+		
+		
+		return infoMap;
+	}
+	
+}

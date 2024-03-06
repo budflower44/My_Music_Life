@@ -17,5 +17,11 @@ public interface SpotifyDAO {
 	String compareToDBDataTracks(String id);
 
 	void insertDBTracks(TracksVO tracksVO);
+
+	AlbumsVO getDetailAlbum(String id);
+
+	ArtistsVO getDetailArtist(String id);
+
+	TracksVO getDetailTrack(String id);
 	
 }

@@ -50,4 +50,16 @@
 		#{type}, #{uri})
 	</insert>
 	
+	<select id="getDetailAlbum" parameterType="String" resultType="com.mml.www.domain.AlbumsVO">
+		select * from albums where id = #{id}
+	</select>
+	
+	<select id="getDetailArtist" parameterType="String" resultType="com.mml.www.domain.ArtistsVO">
+		select * from artists where id = #{id}
+	</select>
+	
+	<select id="getDetailTrack" parameterType="String" resultType="com.mml.www.domain.TracksVO">
+		select * from tracks where id = #{id}
+	</select>
+	
 </mapper>

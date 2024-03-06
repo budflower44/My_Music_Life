@@ -28,81 +28,18 @@ async function fetchWebApi(token, keyword) {
 }
 
 document.getElementById('searchBtn').addEventListener('click', async ()=>{
-    try {
-        const keywordVal = document.getElementById('searchKeyword').value;
-        console.log(keywordVal);
-        getTokenToServer().then(token=>{
-            fetchWebApi(token, keywordVal).then(res =>{
-                if(res.albums){
-                    searchAlbumsDataToServer(res.albums);
-                    for(let i=0; i<res.albums.items.length; i++){
-                        console.log(res.albums.items[i].external_urls.spotify);
-                        const url = res.albums.items[i].external_urls.spotify;
-                        const embedUrl = url.match(/\/album\/(\w+)/)[0];
-                        console.log(embedUrl);
-                    }
-                }
-                if(res.artists){
-                    for(let i=0; i<res.artists.items.length; i++){
-                        console.log(res.artists.items[i].external_urls.spotify);
-                        const url = res.artists.items[i].external_urls.spotify;
-                        const embedUrl = url.match(/\/artist\/(\w+)/)[0];
-                        console.log(embedUrl);
-                    }
-                }
-                if(res.tracks){
-                    for(let i=0; i<res.tracks.items.length; i++){
-                        console.log(res.tracks.items[i].external_urls.spotify);
-                        const url = res.tracks.items[i].external_urls.spotify;
-                        const embedUrl = url.match(/\/track\/(\w+)/)[0];
-                        console.log(embedUrl);
-                    }
-                }
-                
-                location.href="/mml/main?"+keywordVal;
-                
-            })
-        })
-    } catch (error) {
-        console.log(error);
-    }
+    const keywordVal = document.getElementById('searchKeyword').value;
+    console.log(keywordVal);
+    location.href=`/mml/main/${keywordVal}`;
 })
 
-async function searchAlbumsDataToServer(searchData){
-    try {
-        const url = "/mml/search/albums";
-        const config = {
-            method : 'post',
-            headers : {
-                'content-type' : 'application/json; charset=utf-8'
-            },
-            body : JSON.stringify(searchData)
-        };
-        const resp = await fetch(url, config);
-        const result = await resp.text();
-        console.log("서버 응답 받음:", result);
-        return result;
-    } catch (error) {
-        console.log(error);
+const searchInput = document.getElementById("searchKeyword");
+searchInput.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const keywordVal = document.getElementById('searchKeyword').value;
+    	console.log(keywordVal);
+    	location.href=`/mml/main/${keywordVal}`;
     }
-}
-
-async function searchArtistsDataToServer(searchData){
-    try {
-        const url = "/mml/search/artist"
-        const config = {
-            method: 'post',
-            headers : {
-                'content-type' : 'appication/json; charset=utf-8'
-            },
-            body : JSON.stringify(searchData)
-        };
-        const resp = await fetch(url, config);
-        const result = await resp.text();
-        console.log("서버 응답 받은", result);
-        return result;
-    } catch (error) {
-        console.log(error);
-    }
-}
+});
 

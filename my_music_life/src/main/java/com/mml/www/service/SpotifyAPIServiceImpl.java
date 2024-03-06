@@ -1,5 +1,10 @@
 package com.mml.www.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class SpotifyAPIServiceImpl implements SpotifyAPIService {
+	
+	private final Logger log = LoggerFactory.getLogger(SpotifyAPIServiceImpl.class);
 	
 	@Autowired
 	private SpotifyDAO sdao;
@@ -90,6 +97,121 @@ public class SpotifyAPIServiceImpl implements SpotifyAPIService {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	@Override
+	public Map<String, String> getDetailInfoAlbum(String id) {
+		log.info("serviceImpl in");
+		Map<String, String> infoMap = new HashMap<>();
+		try {
+			AlbumsVO albumVO = sdao.getDetailAlbum(id);
+			log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ albumsVO >> "+albumVO);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ albumsVO >> "+albumVO);
+			
+			infoMap.put("images_url", albumVO.getImagesUrl());
+			infoMap.put("artist_name", albumVO.getArtistsName());
+			infoMap.put("name", albumVO.getName());
+			infoMap.put("release_date", albumVO.getReleaseDate());
+			infoMap.put("total_tracks", Integer.toString(albumVO.getTotalTracks()));
+			infoMap.put("likes", Long.toString(albumVO.getLikes()));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("info 잘못 가져옴");
+		}
+		
+		return infoMap;
+	}
+	
+	@Override
+	public Map<String, String> getDetailInfoArtist(String id) {
+		Map<String, String> infoMap = new HashMap<>();
+		try {
+			ArtistsVO artistVO = sdao.getDetailArtist(id);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ artistVO >> "+artistVO);
+			
+			infoMap.put("images_url", artistVO.getImagesUrl());
+			infoMap.put("name", artistVO.getName());
+			infoMap.put("genres", artistVO.getGenres());
+			infoMap.put("followers_total", Long.toString(artistVO.getFollowersTotal()));
+			infoMap.put("likes", Long.toString(artistVO.getLikes()));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("info 잘못 가져옴");
+		}
+		
+		return infoMap;
+	}
+	
+	private String albumArtistsExternalUrls;
+	private String albumArtistsHref;
+	private String albumArtistsId;
+	private String albumArtistsName;
+	private String albumArtistsType;
+	private String albumArtistsUri;
+	
+	private String albumExternalUrls;
+	private String albumHref;
+	private String albumId;
+	private String albumImagesUrl;
+	private int albumImagesHeight;
+	private int albumImagesWidth;
+	private String albumName;
+	private String albumReleaseDate;
+	private String albumReleaseDatePrecision;
+	private int albumTotalTracks;
+	private String albumType;
+	private String albumUri;
+	
+	private String artistsExternalUrls;
+	private String artistsHref;
+	private String artistsId;
+	private String artistsName;
+	private String artistsType;
+	private String artistsUri;
+	
+    private String id;
+    private String externalUrl;
+    private long discNumber;
+    private long durationMs;
+    private Boolean explicit;
+    private String externalIds;
+    private String href;
+    private Boolean isLocal;
+    private String name;
+    private long popularity;
+    private String previewUrl;
+    private int trackNumber;
+    private String type;
+    private String uri;
+    private long likes;
+    private long playCount;
+    private int rankMonth;
+    private int rankWeek;
+    private int rankDay;
+	
+	@Override
+	public Map<String, String> getDetailInfoTrack(String id) {
+		Map<String, String> infoMap = new HashMap<>();
+		try {
+			TracksVO trackVO = sdao.getDetailTrack(id);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ artistVO >> "+trackVO);
+			
+			infoMap.put("album_images_url", trackVO.getAlbumImagesUrl());
+			infoMap.put("track_name", trackVO.getName());
+			infoMap.put("artists_name", trackVO.getArtistsName());
+			infoMap.put("album_name", trackVO.getAlbumName());
+			infoMap.put("album_release_date", trackVO.getAlbumReleaseDate());
+			infoMap.put("duration_ms", Long.toString(trackVO.getDurationMs()));
+			infoMap.put("likes", Long.toString(trackVO.getLikes()));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("info 잘못 가져옴");
+		}
+		
+		return infoMap;
 	}
 	
 }
