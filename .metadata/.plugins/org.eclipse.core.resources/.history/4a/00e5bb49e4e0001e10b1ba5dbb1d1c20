@@ -1,0 +1,5 @@
+package com.mml.www.domain;
+
+public class MemberDTO {
+
+}

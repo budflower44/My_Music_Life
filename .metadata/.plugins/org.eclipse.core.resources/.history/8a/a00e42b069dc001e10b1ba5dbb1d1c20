@@ -1,0 +1,9 @@
+package com.mml.www.service;
+
+import com.mml.www.domain.CommentVO;
+
+public interface CommentService {
+
+	int postComment(CommentVO cvo);
+
+}

@@ -139,3 +139,33 @@ ALTER TABLE tracks CHANGE albums_release_date album_release_date varchar(255);
 ALTER TABLE tracks CHANGE albums_release_date_precision album_release_date_precision varchar(255);
 ALTER TABLE tracks CHANGE external_id external_ids varchar(255);
 
+<2024-03-07>
+-- comment 테이블 생성
+create table comment(
+cno bigint auto_increment,
+id varchar(255) not null,
+writer varchar(255) not null, 
+content text not null, 
+reg_at datetime default now(),
+mod_at datetime default now(),
+primary key(cno));
+
+<2024-03-08>
+-- member 테이블 생성
+create table member(
+nick_name varchar(255) not null,
+id varchar(255) not null,
+pwd varchar(255) not null, 
+reg_at datetime default now(),
+mod_at datetime default now(),
+primary key(nick_name));
+
+-- auth_member 테이블 생성
+create table auth_member(
+nick_name varchar(255) not null,
+auth varchar(100) not null
+);
+
+-- auth_member에 member nick_name 외래키 추가
+alter table auth_member add constraint fk_auth foreign key(nick_name) references member(nick_name);
+

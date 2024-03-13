@@ -370,6 +370,7 @@ document.addEventListener('click', (e)=>{
         console.log(idVal);
         let uriVal = musicBoxTr.querySelector('.uri').value;
         console.log(uriVal);
+        commtentFrom();
         if(uriVal.match(/:(.*?):/)[1] == "album"){
             let infoWord = uriVal.match(/album/)[0];
             console.log(infoWord);
@@ -380,8 +381,93 @@ document.addEventListener('click', (e)=>{
                 let artist_name = album.artist_name;
                 let release_date = album.release_date;
                 let total_tracks = album.total_tracks;
-                let likes = album.likes;
+                let likes = album.likes;       
                 detailFromAlbum(images_url, name, artist_name, release_date, total_tracks, likes);
+                //댓글
+                if(nickName.length == 0 || nickName == null || nickName == ''){
+                    let cmtText = document.getElementById('cmtText');
+                    cmtText.addEventListener('focus', ()=>{
+                        let loginDiv = document.querySelector('.loginDiv');
+                        loginDiv.style.display = 'block';
+                        cmtText.disabled = true;
+                        loginFrom();
+                        document.querySelector('.loginJoinBtn').addEventListener('click', ()=>{
+                            loginDiv.style.display = 'none';
+                            let joinDiv = document.querySelector('.joinDiv');
+                            joinDiv.style.display = 'block';
+                            joinFrom();
+                            document.getElementById('joinBtn').addEventListener('click', ()=>{
+                                let nickName = document.getElementById('joinNickNameInput').value;
+                                let id = document.getElementById('joinIdInput').value;
+                                let pwd = document.getElementById('joinPwdCheckInput').value;
+                                console.log(nickName);
+                                console.log(id);
+                                console.log(pwd);
+                                let joinData = {
+                                    nickName : nickName, 
+                                    id : id, 
+                                    pwd : pwd
+                                }
+                                console.log(joinData);
+                                join(joinData).then(joinResult =>{
+                                    console.log(joinResult);
+                                    if(joinResult == '1'){
+                                        search(keyword);
+                                    }
+                                })
+                            })
+                        })
+                            
+
+                        })
+                    })
+
+                }
+                //댓글 post 기능 + 추후 enter 기능도 추가
+                document.getElementById('cmtPostBtn').addEventListener('click', ()=>{
+                    if(sesId != null){
+                        let cmtText = document.getElementById('cmtText');
+                        if(cmtText.value == null || cmtText.value == ''){
+                            alert('댓글을 입력해주세요.');
+                            cmtText.focus();
+                        }else{
+                            let cmtData={
+                                id : idVal,
+                                writer: document.getElementById('cmtWriter').innerText,
+                                content : cmtText.value
+                            };
+                            postCommentToServer(cmtData).then(result=>{
+                                if(result == '1'){
+                                    cmtText.value = "";
+                                }
+                                //추후 프로필 이미지 가져오기 작업 해야함
+                                const profileImg = document.getElementById('profileImg');
+                                let fileName = profileImg.getAttribute('src');
+                                //댓글 DB에서 받아오기
+                                getCommentToServer(idVal).then(result=>{
+                                    console.log(result);
+                                    //댓글 뿌리기
+                                    for(let cvo of result){
+                                       commentContents(fileName, cvo.writer, cvo.content);
+                                    }
+                                })
+                            })
+                        }  
+                    }else{
+
+                    }
+                })
+                //추후 프로필 이미지 가져오기 작업 해야함
+                const profileImg = document.getElementById('profileImg');
+                let fileName = profileImg.getAttribute('src');
+                //댓글 DB에서 받아오기
+                getCommentToServer(idVal).then(result=>{
+                    console.log(result);
+                    //댓글 뿌리기
+                    for(let cvo of result){
+                       commentContents(fileName, cvo.writer, cvo.content);
+                    }
+                })
             })
         }else if(uriVal.match(/:(.*?):/)[1] == "artist"){
             let infoWord = uriVal.match(/artist/)[0];
@@ -394,6 +480,7 @@ document.addEventListener('click', (e)=>{
                 let followers_total = artist.followers_total;
                 let likes = artist.likes;
                 detailFromArtist(images_url, name, genres, followers_total, likes);
+                //댓글
             })
         }else if(uriVal.match(/:(.*?):/)[1] == "track"){
             let infoWord = uriVal.match(/track/)[0];
@@ -407,6 +494,7 @@ document.addEventListener('click', (e)=>{
                 let duration_ms = track.duration_ms;
                 let likes = track.likes;
                 detailFromTrack(album_images_url, track_name, artists_name, album_release_date, duration_ms, likes);
+                //댓글
             })
         }
     }
@@ -445,6 +533,7 @@ async function getContentInfoAlbumToServer(idVal){
 //Album -> DetailInfo 뿌리기 구문
 function detailFromAlbum(images_url, name, artist_name, release_date, total_tracks, likes){
     let div = document.querySelector('.contentInfoDiv');
+    console.log(name);
     div.innerHTML = "";
     div.innerHTML += `
     <div class="contentImageDiv">
@@ -586,6 +675,195 @@ function detailFromTrack(album_images_url, track_name, artists_name, album_relea
     // }
 }
 
-async function likesUp(){
-
+//댓글 입력 From
+function commtentFrom() {
+    const contentCommentDiv = document.querySelector('.contentCommentDiv');
+    contentCommentDiv.innerHTML = `
+    <div class="commentInputDiv">
+	<br>
+		<div class="input-group">
+		    <span id="cmtWriter" class="input-group-text">Writer</span>
+			<input type="text" id="cmtText" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2" placeholder="Add Comment...">
+			<button class="btn btn-outline-secondary" type="button" id="cmtPostBtn">Add</button>
+		</div>
+		<br>
+		<div class="commentPrintDiv">
+		    <div id="comment-area"> 	
+			</div>		
+		</div>
+	<br>
+	</div>
+    `;
 }
+
+//댓글 DB에 저장하기 기능
+async function postCommentToServer(cmtData){
+    try {
+        const url = "/comment/post";
+        const config = {
+            method : "post",
+            headers : {
+                'content-type' : 'application/json; charset=utf-8'
+            },
+            body : JSON.stringify(cmtData)
+        };
+        const res = await fetch(url, config);
+        const result = await res.text();
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//댓글 DB에서 가져오기 기능
+async function getCommentToServer(id){
+    try {
+        const url = "/comment/getComment";
+        const config = {
+            method : "post",
+            headers : {
+                'content-type' : 'application/json; charset=utf-8'
+            },
+            body : id
+        };
+        const res = await fetch(url, config);
+        const result = await res.json();
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//댓글 뿌리기 기능
+function commentContents(fileName, writer, content){
+    const commentArea = document.getElementById('comment-area');
+    commentArea.innerHTML += `
+                 <div class="media mb-4">
+					<img class="d-flex mr-3 rounded-circle" style="height:30px; width:30px; display:inline;"
+						alt="profileImg" src="${fileName}">
+					<div class="media-body">
+						<h6 class="mt-0">${writer}</h6>
+						${content}
+						<button id="commentModBtn">M</button>
+						<button id="commentDelBtn">X</button>
+					</div>
+				</div>
+    `;
+}
+
+//로그인 Div From
+function loginFrom(idVal){
+    const loginDiv = document.querySelector('.loginDiv');
+    loginDiv.innerHTML = `
+    <form action="/member/login" method="post">
+    <div class="loginFromDiv">
+        <div class="col-auto">
+            <label for="loginIdInput" class="col-form-label">ID</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="loginIdInput" name="id" class="form-control" aria-describedby="ID" placeholder="ID"> 
+        </div>
+        <div class="col-auto">
+            <label for="loginPwdInput" class="col-form-label">Password</label>
+        </div>
+        <div class="col-auto">
+            <input type="password" id="loginPwdInput" name="pwd" class="form-control" aria-describedby="PWD" placeholder="Password">
+        </div>
+        <div class="col-auto">
+            <span id="passwordHelpInline" class="form-text"> Must be 6-15 characters long. </span>
+        </div>
+        <br>
+        <div class="loginBtnDiv">
+            <button class="loginBtn" id="loginBtn" type="button">Login</button>
+            <button type="button" id="loginJoinBtn" class="loginJoinBtn">Join</button>
+            <button type="button" class="loginCancleBtn">Cancle</button>
+        </div>
+    </div>		
+    </form>
+    `;
+}
+
+//회원가입 Div From
+function joinFrom(idVal){
+    const loginDiv = document.querySelector('.joinDiv');
+    loginDiv.innerHTML = `
+    <form id="joinFrom">
+    <div class="joinFromDiv">
+        <div class="col-auto">
+            <label for="joinNickNameInput" class="col-form-label">Nick Name</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="joinNickNameInput" name="nickName" class="form-control" aria-describedby="nickName" placeholder="Nick Name"> 
+        </div>
+        <div class="col-auto">
+            <label for="loginIdInput" class="col-form-label">ID</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" id="joinIdInput" name="id" class="form-control" aria-describedby="ID" placeholder="ID"> 
+        </div>
+        <div class="col-auto">
+            <label for="joinPwdInput" class="col-form-label">Password</label>
+        </div>
+        <div class="col-auto">
+            <input type="password" id="joinPwdInput" class="form-control" aria-describedby="PWD" placeholder="Password">
+        </div>
+        <div class="col-auto">
+            <span id="passwordHelp" class="form-text" style="font-weight:bold;"> Must be 6-15 characters long and (!@#$%&) include. </span>
+        </div>
+        <div class="col-auto">
+            <label for="joinPwdCheckInput" class="col-form-label">Password Check</label>
+        </div>
+        <div class="col-auto">
+            <input type="password" id="joinPwdCheckInput" name="pwd" class="form-control" aria-describedby="PWD" placeholder="Password Check">
+        </div>
+        <div class="col-auto">
+            <span id="joinPwdCheck" class="form-text" style="color:red; display:none;"> Password do not math. </span>
+        </div>
+        <br>
+        <div class="joinBtnDiv">
+            <button type="button" id="joinBtn" class="loginJoinBtn">Join</button>
+            <button type="button" class="loginCancleBtn">Cancle</button>
+        </div>
+    </div>		
+    </form>
+    `;
+}
+
+function joinData(){
+    let nickName = document.getElementById('joinNickNameInput').value;
+    let id = document.getElementById('joinIdInput').value;
+    let pwd = document.getElementById('joinPwdCheckInput').value;
+    console.log(nickName);
+    console.log(id);
+    onsole.log(pwd);
+    let joinData = {
+        nickName : nickName, 
+        id : id, 
+        pwd : pwd
+    }
+    return joinData;
+}
+
+//회원가입 비동기 통신
+async function join(joinData){
+    try {
+        const url = "/member/join";
+        const config = {
+            method : "post",
+            headers : {
+                'content-type' : 'application/json; charset=utf-8'
+            },
+            body : JSON.stringify(joinData)
+        };
+        const res = await fetch(url, config);
+        const result = await res.text();
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+
+
+

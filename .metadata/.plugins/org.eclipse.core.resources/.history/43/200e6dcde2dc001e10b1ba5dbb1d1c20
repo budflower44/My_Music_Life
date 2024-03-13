@@ -1,0 +1,13 @@
+package com.mml.www.service;
+
+import java.util.Map;
+
+import com.mml.www.domain.CommentVO;
+
+public interface CommentService {
+
+	int postComment(CommentVO cvo);
+
+	Map<String, String> getComment(String id);
+
+}

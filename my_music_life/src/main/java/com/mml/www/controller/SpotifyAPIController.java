@@ -36,11 +36,11 @@ public class SpotifyAPIController {
 	
 	private SpotifyApi spotifyApi;
 	
-	private String clientId = "7018fc47d1cb49bba23cee1e5c702d60";
+	private String clientId = "";
 
-	private String clientSecret = "7c1006ea22e04ce0888c4bb616a68537";
+	private String clientSecret = "";
 
-	private String redirectUri = "http://localhost:8089/callback";
+	private String redirectUri = "";
 	
 	public void initialize() {
 		// SpotifyApi 객체를 생성하고 클라이언트 ID, 리디렉션 URI를 설정합니다.
@@ -63,18 +63,18 @@ public class SpotifyAPIController {
 	@Autowired
 	private TracksJSONHandler tracksJSON;
 
+	@PostMapping("/token")
+	public ResponseEntity<String> getAuthSpotifyApiToken(Model m) {
+		log.info("token 발급 진행 중");
+		String accessToken = AuthSpotifyAPIConfig.accessToken().toString();
+		log.info(accessToken);
+		return new ResponseEntity<String>(accessToken, HttpStatus.OK);
+	}
+	
 	@GetMapping("/main/{keyword}")
 	public String mainPage(@PathVariable("keyword") String searchkeyword, Model m) {
 		m.addAttribute("keyword", searchkeyword);
 		return "/mml/main";
-	}
-	
-	@PostMapping("/token")
-	public ResponseEntity<String> getAuthSpotifyApiToken(Model m) {
-		log.info("token 발급 진행 중");
-	    String accessToken = AuthSpotifyAPIConfig.accessToken().toString();
-	    log.info(accessToken);
-	    return new ResponseEntity<String>(accessToken, HttpStatus.OK);
 	}
 	
 	@PostMapping("/search/albums")

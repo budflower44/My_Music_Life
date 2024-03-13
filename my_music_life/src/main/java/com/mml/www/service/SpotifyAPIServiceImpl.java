@@ -144,53 +144,6 @@ public class SpotifyAPIServiceImpl implements SpotifyAPIService {
 		return infoMap;
 	}
 	
-	private String albumArtistsExternalUrls;
-	private String albumArtistsHref;
-	private String albumArtistsId;
-	private String albumArtistsName;
-	private String albumArtistsType;
-	private String albumArtistsUri;
-	
-	private String albumExternalUrls;
-	private String albumHref;
-	private String albumId;
-	private String albumImagesUrl;
-	private int albumImagesHeight;
-	private int albumImagesWidth;
-	private String albumName;
-	private String albumReleaseDate;
-	private String albumReleaseDatePrecision;
-	private int albumTotalTracks;
-	private String albumType;
-	private String albumUri;
-	
-	private String artistsExternalUrls;
-	private String artistsHref;
-	private String artistsId;
-	private String artistsName;
-	private String artistsType;
-	private String artistsUri;
-	
-    private String id;
-    private String externalUrl;
-    private long discNumber;
-    private long durationMs;
-    private Boolean explicit;
-    private String externalIds;
-    private String href;
-    private Boolean isLocal;
-    private String name;
-    private long popularity;
-    private String previewUrl;
-    private int trackNumber;
-    private String type;
-    private String uri;
-    private long likes;
-    private long playCount;
-    private int rankMonth;
-    private int rankWeek;
-    private int rankDay;
-	
 	@Override
 	public Map<String, String> getDetailInfoTrack(String id) {
 		Map<String, String> infoMap = new HashMap<>();

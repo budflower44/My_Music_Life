@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <% request.setCharacterEncoding("UTF-8"); %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,6 +18,12 @@ body{
 	margin: 0;
 }
 .parentsDiv{
+	height: 100vh;
+	width: 100vw;
+	position: relative;
+
+}
+.parentDiv{
 	height: 100vh;
 	width: 100vw;
 	display: flex;
@@ -188,9 +195,57 @@ a{
 a:hover {
 	color: white;
 }
+.memberDiv, .loginDiv{
+	width: 350px;
+	height: 300px;
+	background-color: rgba(255,255,255,0.7);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform : translate(-70%, -60%);
+	border-radius: 5%;
+	backdrop-filter: blur(10px);
+	box-shadow: 2px 7px 15px 8px rgba(0,0,0,0.3);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.joinDiv{
+	width: 350px;
+	height: 450px;
+	background-color: rgba(255,255,255,0.7);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform : translate(-70%, -60%);
+	border-radius: 5%;
+	backdrop-filter: blur(10px);
+	box-shadow: 2px 7px 15px 8px rgba(0,0,0,0.3);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.loginFromDiv, .joinFromDiv{
+	width: 80%;
+	margin: 10% auto;
+	align-items: center;
+}
+.loginFromDiv, .joinFromDiv label{
+	font-weight: bold;
+	color: black;
+}
+.loginBtnDiv, .joinBtnDiv{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
 </style>
 <body>
 <div class="parentsDiv">
+<div class="parentDiv">
 	<div class="headerDiv">
 		<div class="searchLineDiv">
 				<div class="navDiv">
@@ -211,7 +266,7 @@ a:hover {
 	<div class="midDiv">
 		<div class="userDetailDiv">
 			<div class="userImgDiv">
-				<img alt="" src="/resources/images/스쿠나.gif" style="height:100%; width:100%;">
+				<img alt="profileImg" id="profileImg" src="/resources/images/스쿠나.gif" style="height:100%; width:100%;">
 			</div>
 			<div class="userDetailInfoDiv">
 				<a href="#"><h3>Nick_name ${nick_name }</h3></a>
@@ -264,66 +319,34 @@ a:hover {
 						<p>likes : ${likes}</p>				
 					</div>
 				</div>
-				<div class="contentCommentDiv">
-					<div class="commentInputDiv">
-					<br>
-					<div class="input-group">
-						<span id="cmtWriter" class="input-group-text">Writer</span>
-						<input type="text" id="cmtText" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2" placeholder="Add Comment...">
-						<button class="btn btn-outline-secondary" type="button" id="cmtPostBtn">Add</button>
-					</div>
-					<br>
-					<div class="commentPrintDiv">
-						<div id="comment-area">
-							<div class="media mb-4">
-								<img class="d-flex mr-3 rounded-circle" style="height:30px; width:30px; display:inline;"
-								alt="image" src="/resources/images/4490035.png">
-								<div class="media-body">
-									<h6 class="mt-0">Commenter Name</h6>
-									첫번째 댓글.
-									<button id="commentModBtn">M</button>
-									<button id="commentDelBtn">X</button>
-								</div>
-							</div>
-							<div class="media mb-4">
-								<img class="d-flex mr-3 rounded-circle" style="height:30px; width:30px; display:inline;"
-								alt="image" src="/resources/images/no_thumbnail.png">
-								<div class="media-body">
-									<h6 class="mt-0">Commenter Name</h6>
-									두번째 댓글. 줄 넘어가면 어떻게 되나요? 보는 주우우우우우우우우우ㅜ우우우우우ㅜ우우우우우우웅.ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ..,,,,,,,,,,,,,
-									<button id="commentModBtn">M</button>
-									<button id="commentDelBtn">X</button>
-								</div>
-							</div>
-							<div class="media mb-4">
-								<img class="d-flex mr-3 rounded-circle" style="height:30px; width:30px; display:inline;"
-								alt="image" src="/resources/images/4490035.png">
-								<div class="media-body">
-									<h6 class="mt-0">Commenter Name</h6>
-									세번째 댓글. 스크롤 왜안되ㅣㅣ우우우웅.ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ..,,,,,,,,,,,,,
-									<button id="commentModBtn">M</button>
-									<button id="commentDelBtn">X</button>
-								</div>
-							</div>
-						</div>		
-					</div>
-					<br>
-					</div>
-				</div>
+				<div class="contentCommentDiv"></div>
 			</div>		
 	</div>
 	<div class="footerDiv">
 		<div class="musicBox" id="musicBox"></div>
 	</div>
-	<div></div>
 </div>
-<script src="/resources/js/spotifyAPI.js"></script>
+	<div class="memberDiv" style="display: none"></div>
+	<div class="loginDiv" style="display: none"></div>
+	<div class="joinDiv" style="display: none"></div>
+</div>
+<sec:authorize access="isAuthenticated()">
+<sec:authentication property="principal.mvo.nickName" var="authNick"/>
+<sec:authentication property="principal.mvo.id" var="authId"/>
+<sec:authentication property="principal.mvo.authList" var="auths"/>
+</sec:authorize>
+<script type="text/javascript">
+	const nickName = `<c:out value="${authNick}"/>`;
+	console.log(nickName);
+</script>
 <script type="text/javascript">
 	const keyword = `<c:out value="${keyword}" />`;
 	console.log(keyword);
+</script>
+<script src="/resources/js/spotifyAPI.js"></script>
+<script type="text/javascript">
 	search(keyword);
 </script>
-<script src="/resources/js/comment.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 
 </body>

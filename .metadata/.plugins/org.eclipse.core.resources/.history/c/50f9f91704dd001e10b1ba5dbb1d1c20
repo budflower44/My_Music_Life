@@ -1,0 +1,28 @@
+package com.mml.www.security;
+
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+
+import com.mml.www.domain.MemberVO;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Getter
+public class AuthMember extends User {
+
+	public AuthMember(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+		super(username, password, authorities);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public AuthMember(MemberVO mvo) {
+		super(mvo.getNickName(), mvo.getPwd(), mvo.getAuthList())
+	}
+	
+	
+	
+}

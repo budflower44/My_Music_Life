@@ -1,0 +1,5 @@
+package com.mml.www.repository;
+
+public interface CommentDAO {
+
+}

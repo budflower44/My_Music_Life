@@ -1,0 +1,5 @@
+package com.mml.www.controller;
+
+public class MemberController {
+
+}
