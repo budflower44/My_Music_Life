@@ -22,5 +22,15 @@ public class MemberServiceImpl implements MemberService{
 		System.out.println(">>>>>>>>>>>>>>>>>>>>> insert DAO is"+(isOk>0?"OK":"Fail"));
 		return mdao.insertAuths(mvo.getNickName());
 	}
+
+	@Override
+	public String getPwd(String id) {
+		return mdao.getPwd(id);
+	}
+
+	@Override
+	public boolean updateLastLogin(String authNick) {
+		return mdao.updateLastLogin(authNick);
+	}
 	
 }

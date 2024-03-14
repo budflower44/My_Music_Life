@@ -2,20 +2,72 @@ package com.mml.www.security;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.stereotype.Component;
 
+import com.mml.www.service.MemberService;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-
+	
+	@Setter
+	@Getter
+	private String authNick;
+	
+	@Setter
+	@Getter
+	private String authUrl;
+	
+	//redirect 객체 : 해당 데이터를 가지고 리다이렉트 하는 역할
+	private RedirectStrategy rdstg = new DefaultRedirectStrategy();
+	//실제 로그인 정보, 경로 등을 저장
+	private RequestCache reqCache = new HttpSessionRequestCache();
+	
+	@Inject
+	private MemberService msv;
+	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-
+		//Authentication 인증된 auth_member의 객체
+		setAuthNick(authentication.getName());
+		setAuthUrl("/member/login");
+		
+		boolean isOk = msv.updateLastLogin(getAuthNick());
+		
+		//내부에서 로그인 세션 저장됨
+		HttpSession ses = request.getSession();
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ login Success >> "+ses.toString());
+		
+		if(!isOk || ses == null) {
+			return;
+		}else {
+			//시큐리티에 로그인을 시도하면 시도한 로그인 기록이 남게됨.
+			//이전에 시도한 시큐리티 인증 실패 기록을 날리기.
+			ses.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
+		
+		SavedRequest saveReq = reqCache.getRequest(request, response);
+		rdstg.sendRedirect(request, response, (saveReq != null ? saveReq.getRedirectUrl() : getAuthUrl()));
 	}
 
 }

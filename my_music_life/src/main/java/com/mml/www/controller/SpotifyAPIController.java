@@ -3,6 +3,8 @@ package com.mml.www.controller;
 import java.net.URI;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,11 +38,11 @@ public class SpotifyAPIController {
 	
 	private SpotifyApi spotifyApi;
 	
-	private String clientId = "";
+	private String clientId = "7018fc47d1cb49bba23cee1e5c702d60";
 
-	private String clientSecret = "";
+	private String clientSecret = "7c1006ea22e04ce0888c4bb616a68537";
 
-	private String redirectUri = "";
+	private String redirectUri = "http://localhost:8088/callback";
 	
 	public void initialize() {
 		// SpotifyApi 객체를 생성하고 클라이언트 ID, 리디렉션 URI를 설정합니다.
@@ -65,9 +67,8 @@ public class SpotifyAPIController {
 
 	@PostMapping("/token")
 	public ResponseEntity<String> getAuthSpotifyApiToken(Model m) {
-		log.info("token 발급 진행 중");
 		String accessToken = AuthSpotifyAPIConfig.accessToken().toString();
-		log.info(accessToken);
+		System.out.println(accessToken);
 		return new ResponseEntity<String>(accessToken, HttpStatus.OK);
 	}
 	
@@ -77,10 +78,11 @@ public class SpotifyAPIController {
 		return "/mml/main";
 	}
 	
-	@PostMapping("/search/albums")
-	public ResponseEntity<MultiValueMap<String,String>> searchAlbumsData(@RequestBody String albumsData) {
+	@PostMapping("/search/albums/{keywordVal}")
+	public ResponseEntity<MultiValueMap<String,String>> searchAlbumsData(@RequestBody String albumsData, 
+			@PathVariable String keywordVal, HttpSession ses) {
 		System.out.print("@@@@@@@@@@@@@@@@ albumsData >> "+albumsData);
-		
+		ses.setAttribute("keywordVal", keywordVal);	
 		return albumsJSON.albumsJSONHandler(albumsData);
 	} 
 	

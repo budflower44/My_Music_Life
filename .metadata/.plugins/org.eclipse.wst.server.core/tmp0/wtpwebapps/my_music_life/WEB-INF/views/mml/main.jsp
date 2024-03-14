@@ -195,7 +195,7 @@ a{
 a:hover {
 	color: white;
 }
-.memberDiv, .loginDiv{
+.loginDiv{
 	width: 350px;
 	height: 300px;
 	background-color: rgba(255,255,255,0.7);
@@ -251,9 +251,22 @@ a:hover {
 				<div class="navDiv">
 					<nav class="navbar border-bottom border-body" data-bs-theme="dark">
 						<ul class="nav nav-underline justify-content-end">
-							<li class="nav-item"><a class="nav-link" aria-current="page" href="#">Active</a></li>
-							<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
-							<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+							<li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+							<sec:authorize access="isAuthenticated()">
+								<sec:authentication property="principal.mvo.nickName" var="authNick"/>
+								<sec:authentication property="principal.mvo.id" var="authId"/>
+								<sec:authentication property="principal.mvo.authList" var="auths"/>
+							<li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
+							<form action="/member/logout" method="post" id="logoutFrom">
+								<input type="hidden" name="nickName" value="authNick">
+							</form>
+							<c:choose>
+							<c:when test="${auths.stream().anyMath(authVO -> authVO.auth.equals('ROLE_ADMIN')).get()}">
+							<li class="nav-item"><a class="nav-link" href="#">Member List</a></li>
+							</c:when>
+							</c:choose>
+							</sec:authorize>
 						</ul>
 						<form class="d-flex" role="search">
         					<input class="form-control me-2 " id="searchKeyword" type="search" placeholder="Search (최대 20개 출력)" aria-label="Search">
@@ -283,41 +296,14 @@ a:hover {
 							<li class="nav-item"><a class="nav-link searchTabArtists" href="#">Artists</a></li>
 							<li class="nav-item"><a class="nav-link searchTabTracks" href="#">Tracks</a></li>
 						</ul>
-						<table id="searchBox" class="table table-dark table-hover">
-  					<tr>
-						<th></th>
-						<th>Artist</th>
-						<th>Type</th>
-						<th>Release Date</th>
-						<th>Name</th>
-						<th></th>
-					</tr>
-					<tr>
-						<td>
-						<img alt="" src="https://i.scdn.co/image/ab67616d0000b273a3b39c1651a617bb09800fd8" style="height:75px; width:75px; display:inline;">
-						</td>
-						<td>찰리푸스</td>
-						<td>Type</td>
-						<td>Release Date</td>
-						<td>Name</td>
-						<td><i class="bi bi-play-circle-fill"></i></td>
-					</tr> 
-				</table>
+						<table id="searchBox" class="table table-dark table-hover"></table>
 				</div>
 			</div>
 		</div>
 			<div class="contentDetailsDiv">
 				<div class="contentInfoDiv">
- 					<div class="contentImageDiv">
-						<img alt="" src="${images_url}">
-					</div>
-					<div class="contentInfoDetailDiv">
-						<p>Album Name : ${name}</p>
-						<p>Artist Name : ${artist_name}</p>
-						<p>Release Date : ${release_date}</p>
-						<p>Total Tracks : ${total_tracks}</p>
-						<p>likes : ${likes}</p>				
-					</div>
+ 					<div class="contentImageDiv"></div>
+					<div class="contentInfoDetailDiv"></div>
 				</div>
 				<div class="contentCommentDiv"></div>
 			</div>		
@@ -326,15 +312,9 @@ a:hover {
 		<div class="musicBox" id="musicBox"></div>
 	</div>
 </div>
-	<div class="memberDiv" style="display: none"></div>
 	<div class="loginDiv" style="display: none"></div>
 	<div class="joinDiv" style="display: none"></div>
 </div>
-<sec:authorize access="isAuthenticated()">
-<sec:authentication property="principal.mvo.nickName" var="authNick"/>
-<sec:authentication property="principal.mvo.id" var="authId"/>
-<sec:authentication property="principal.mvo.authList" var="auths"/>
-</sec:authorize>
 <script type="text/javascript">
 	const nickName = `<c:out value="${authNick}"/>`;
 	console.log(nickName);

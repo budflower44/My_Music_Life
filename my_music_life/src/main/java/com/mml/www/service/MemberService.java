@@ -6,4 +6,8 @@ public interface MemberService {
 
 	int memberInsert(MemberVO mvo);
 
+	String getPwd(String id);
+
+	boolean updateLastLogin(String authNick);
+
 }

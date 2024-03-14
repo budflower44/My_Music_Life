@@ -1,0 +1,166 @@
+package com.mml.www.controller;
+
+import java.net.URI;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mml.www.config.AuthSpotifyAPIConfig;
+import com.mml.www.handler.AlbumsJSONHandler;
+import com.mml.www.handler.ArtistsJSONHandler;
+import com.mml.www.handler.TracksJSONHandler;
+import com.mml.www.service.SpotifyAPIService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import se.michaelthelin.spotify.SpotifyApi;
+
+@Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/mml/**")
+@Controller
+public class SpotifyAPIController {
+	
+	private SpotifyApi spotifyApi;
+	
+	private String clientId = "7018fc47d1cb49bba23cee1e5c702d60";
+
+	private String clientSecret = "7c1006ea22e04ce0888c4bb616a68537";
+
+	private String redirectUri = "http://localhost:8088/callback";
+	
+	public void initialize() {
+		// SpotifyApi 객체를 생성하고 클라이언트 ID, 리디렉션 URI를 설정합니다.
+		spotifyApi = new SpotifyApi.Builder()
+				.setClientId(clientId)
+				.setClientSecret(clientSecret)
+				.setRedirectUri(URI.create(redirectUri))
+				.build();
+	}
+	
+	@Autowired
+	private SpotifyAPIService ssv;
+	
+	@Autowired
+	private AlbumsJSONHandler albumsJSON;
+	
+	@Autowired
+	private ArtistsJSONHandler artistsJSON;
+	
+	@Autowired
+	private TracksJSONHandler tracksJSON;
+
+	@PostMapping("/token")
+	public ResponseEntity<String> getAuthSpotifyApiToken(Model m) {
+		String accessToken = AuthSpotifyAPIConfig.accessToken().toString();
+		System.out.println(accessToken);
+		return new ResponseEntity<String>(accessToken, HttpStatus.OK);
+	}
+	
+	@GetMapping("/main/{keyword}")
+	public String mainPage(@PathVariable("keyword") String searchkeyword, Model m) {
+		m.addAttribute("keyword", searchkeyword);
+		return "/mml/main";
+	}
+	
+	@PostMapping("/search/albums/{keywordVal}")
+	public ResponseEntity<MultiValueMap<String,String>> searchAlbumsData(@RequestBody String albumsData, 
+			@PathVariable String keywordVal, HttpSession ses) {
+		System.out.print("@@@@@@@@@@@@@@@@ albumsData >> "+albumsData);
+		ses.setAttribute("keywordVal", keywordVal);
+		return albumsJSON.albumsJSONHandler(albumsData);
+	} 
+	
+	@PostMapping("/search/artists")
+	public ResponseEntity<MultiValueMap<String,String>> searchArtistData(@RequestBody String artistsData) {
+		System.out.print("@@@@@@@@@@@@@@@@ artistsData >> "+artistsData);
+		
+		return artistsJSON.artistsJSONHandler(artistsData);
+	} 
+	
+	@PostMapping("/search/tracks")
+	public ResponseEntity<MultiValueMap<String,String>> searchTracksData(@RequestBody String tracksData) {
+		System.out.print("@@@@@@@@@@@@@@@@ tracksData >> "+tracksData);
+		
+		return tracksJSON.tracksJSONHandler(tracksData);
+	}
+	
+	@PostMapping(value="/info/album", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> getDetailInfoAlbum(@RequestBody String id){
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			Map<String, String> infoMap = ssv.getDetailInfoAlbum(id);
+			
+			String json = mapper.writeValueAsString(infoMap);
+			log.info(json);
+			
+			return new ResponseEntity<String>(json.toString(), HttpStatus.OK);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("getDetailInfoAlbum JSON 파싱 오류");
+			
+			return new ResponseEntity<String>("", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping(value="/info/artist", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> getDetailInfoArtist(@RequestBody String id){
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			Map<String, String> infoMap = ssv.getDetailInfoArtist(id);
+			
+			String json = mapper.writeValueAsString(infoMap);
+			log.info(json);
+			
+			return new ResponseEntity<String>(json.toString(), HttpStatus.OK);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("getDetailInfoArtist JSON 파싱 오류");
+			
+			return new ResponseEntity<String>("", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping(value="/info/track", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> getDetailInfoTrack(@RequestBody String id){
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			Map<String, String> infoMap = ssv.getDetailInfoTrack(id);
+			
+			String json = mapper.writeValueAsString(infoMap);
+			log.info(json);
+			
+			return new ResponseEntity<String>(json.toString(), HttpStatus.OK);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.info("getDetailInfoTrack JSON 파싱 오류");
+			
+			return new ResponseEntity<String>("", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+}

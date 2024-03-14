@@ -30,9 +30,18 @@ async function fetchWebApi(token, keyword) {
 //SearchData 중 albums에 대한 데이터만 DB로 넘겨서 저장시키고, 쿼리스트링 오브젝트로 반환하기 (embemFrom 호출에 사용하기 위함)
 async function searchAlbumsDataToServer(searchData){
     try {
-        const url = "/mml/search/albums";
+        const searchKeywordVal = document.getElementById('searchKeyword').value;
+        console.log(searchKeywordVal);
+        let keywordVal = null;
+        if(searchKeywordVal == null || searchKeywordVal.length <= 0){
+            keywordVal = keyword;
+        }else{
+            keywordVal = searchKeywordVal;
+        }
+        console.log(keywordVal);
+        const url = "/mml/search/albums/"+keywordVal;
         const config = {
-            method : 'post',
+            method : 'POST',
             headers : {
                 'content-type' : 'application/json; charset=utf-8'
             },
@@ -345,7 +354,7 @@ function tracksTableFrom(){
 function tracksEmbedFrom(id, albumImagesUrl, artistsName, type, albumReleaseDate, name, embedUrl, uri){
     console.log(document.getElementById('musicBox'));
     document.getElementById('searchBox').innerHTML += `
-    <tr class="playMusic">
+    <tr class="playMusic" data-playMusicId="${id}">
     <td>
     <input type="hidden" class="id" value="${id}">
     <img src="${albumImagesUrl}" style="height:75px; width:75px; display:inline;">
@@ -362,15 +371,31 @@ function tracksEmbedFrom(id, albumImagesUrl, artistsName, type, albumReleaseDate
 document.addEventListener('click', (e)=>{
     console.log(e.target);
     let musicBoxTr = e.target.closest('tr');
+    console.log(musicBoxTr);
     if(musicBoxTr.classList.contains('playMusic')){
         document.getElementById('musicBox').innerHTML = "";
         let embedUrl = musicBoxTr.querySelector('.embed').value;
         embedFromPlayer(embedUrl);
+        //musicBoxTr 내 id 가져오기
         let idVal = musicBoxTr.querySelector('.id').value;
         console.log(idVal);
+            //idVal -> localStorage에 검색어 저장
+            localStorage.setItem('idVal', idVal);
+        //musicBoxTr 내 uri 가져오기
         let uriVal = musicBoxTr.querySelector('.uri').value;
         console.log(uriVal);
+        //댓글 입력창 From 출력
         commtentFrom();
+        //클릭한 Tr의 ID 가져오기 -> 추후 로그인 후 페이지 리로딩 시 사용 예정
+
+        // let playMusicTr = musicBoxTr.classList.contains('playMusic');
+        let playMusicId = musicBoxTr.dataset.playMusicId;
+        console.log(playMusicId);
+        // let playMusicId = document.getElementById('playMusicIdVal').value;
+            //클릭된 musicBoxTr 내 playMusicId -> localStorage에 playMusicId 저장
+            localStorage.setItem('playMusicId', playMusicId);
+
+        //album 카테고리 항목일 경우...
         if(uriVal.match(/:(.*?):/)[1] == "album"){
             let infoWord = uriVal.match(/album/)[0];
             console.log(infoWord);
@@ -384,14 +409,15 @@ document.addEventListener('click', (e)=>{
                 let likes = album.likes;       
                 detailFromAlbum(images_url, name, artist_name, release_date, total_tracks, likes);
                 //댓글
-                if(nickName.length == 0 || nickName == null || nickName == ''){
+                console.log(nickName);
+                if(nickName.length <= 0 || nickName == null || nickName == ''){
                     let cmtText = document.getElementById('cmtText');
                     cmtText.addEventListener('focus', ()=>{
                         let loginDiv = document.querySelector('.loginDiv');
                         loginDiv.style.display = 'block';
                         cmtText.disabled = true;
                         loginFrom();
-                        document.querySelector('.loginJoinBtn').addEventListener('click', ()=>{
+                        document.getElementById('loginJoinBtn').addEventListener('click', ()=>{
                             loginDiv.style.display = 'none';
                             let joinDiv = document.querySelector('.joinDiv');
                             joinDiv.style.display = 'block';
@@ -400,24 +426,57 @@ document.addEventListener('click', (e)=>{
                                 let nickName = document.getElementById('joinNickNameInput').value;
                                 let id = document.getElementById('joinIdInput').value;
                                 let pwd = document.getElementById('joinPwdCheckInput').value;
-                                console.log(nickName);
-                                console.log(id);
-                                console.log(pwd);
                                 let joinData = {
                                     nickName : nickName, 
                                     id : id, 
                                     pwd : pwd
-                                }
-                                console.log(joinData);
+                                };   
                                 join(joinData).then(joinResult =>{
                                     console.log(joinResult);
-                                    if(joinResult == '1'){
+                                    if(joinResult == '1' || joinResult == 1 ){
                                         search(keyword);
+                                        loginDiv.style.display = 'block';
+                                        joinDiv.style.display = 'none';
                                     }
                                 })
-                            })
+                                login().then(loginResult =>{
+                                    console.log(loginResult);
+                                    if(loginResult == 0 || loginResult == '0'){
+                                        alert("로그인 정보가 틀립니다. 다시 로그인 해주세요.");
+                                        loginDiv.style.display = 'block';
+                                        joinDiv.style.display = 'none';
+                                    }else{
+                                        search(keyword);
+
+                                    }
+                                })
+                            })    
                         })
-                            
+                        document.getElementById('loginBtn').addEventListener('click', ()=>{
+                            login().then(loginResult =>{
+                                console.log(loginResult);
+                                if(loginResult == 0 || loginResult == '0'){
+                                    alert("로그인 정보가 틀립니다. 다시 로그인 해주세요.");
+                                    loginDiv.style.display = 'block';
+                                    joinDiv.style.display = 'none';
+                                }else{
+                                    loginDiv.style.display = 'none';
+                                    joinDiv.style.display = 'none';
+                                    search(keyword);
+                                    const localIdVal = localStorage.getItem('idVal');
+                                    console.log(localIdVal);
+                                    const sesKeywordVal = sessionStorage.getItem('keywordVal');
+                                    console.log(sesKeywordVal);
+                                    if(sesKeywordVal){
+                                        search(sesKeywordVal);
+                                        if(playMusicId == localIdVal){
+                                            playMusicTr.addEventListener('click', (e)=>{
+                                                e.classList.add('clicked');
+                                            })
+                                        }
+                                    }
+                                }
+                            })
 
                         })
                     })
@@ -753,10 +812,10 @@ function commentContents(fileName, writer, content){
 }
 
 //로그인 Div From
-function loginFrom(idVal){
+function loginFrom(){
     const loginDiv = document.querySelector('.loginDiv');
     loginDiv.innerHTML = `
-    <form action="/member/login" method="post">
+    <form id="loginFrom">
     <div class="loginFromDiv">
         <div class="col-auto">
             <label for="loginIdInput" class="col-form-label">ID</label>
@@ -785,7 +844,7 @@ function loginFrom(idVal){
 }
 
 //회원가입 Div From
-function joinFrom(idVal){
+function joinFrom(){
     const loginDiv = document.querySelector('.joinDiv');
     loginDiv.innerHTML = `
     <form id="joinFrom">
@@ -863,6 +922,22 @@ async function join(joinData){
         console.log(error);
     }
     
+}
+
+//로그인 비동기 통신
+async function login(){
+    try {
+        const url = "/member/login";
+        const config = {
+            method : "post"
+        };
+        const res = await fetch(url, config);
+        const result = await res.text();
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 

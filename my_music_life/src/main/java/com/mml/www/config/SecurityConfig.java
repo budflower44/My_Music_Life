@@ -3,6 +3,7 @@ package com.mml.www.config;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	
+		
 	//비밀번호 암호화 객체
 	@Bean
 	public PasswordEncoder bcPasswordEncoder() {
@@ -66,6 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.usernameParameter("nickNmae")
 		.passwordParameter("pwd")
 		.loginPage("/member/login")
+		.loginProcessingUrl("/login")
 		.successHandler(authSucessHandler())
 		.failureHandler(authFailureHandler());
 		
