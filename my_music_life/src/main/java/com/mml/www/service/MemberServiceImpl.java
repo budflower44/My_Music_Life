@@ -20,7 +20,7 @@ public class MemberServiceImpl implements MemberService{
 		System.out.println("@@@@@@@@@@@@@@@@ member insert mvo >> "+mvo);
 		int isOk = mdao.insert(mvo);
 		System.out.println(">>>>>>>>>>>>>>>>>>>>> insert DAO is"+(isOk>0?"OK":"Fail"));
-		return mdao.insertAuths(mvo.getNickName());
+		return mdao.insertAuths(mvo.getId());
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public boolean updateLastLogin(String authNick) {
-		return mdao.updateLastLogin(authNick);
+	public boolean updateLastLogin(String authId) {
+		return mdao.updateLastLogin(authId);
 	}
 	
 }

@@ -316,8 +316,8 @@ a:hover {
 	<div class="joinDiv" style="display: none"></div>
 </div>
 <script type="text/javascript">
-	const nickName = `<c:out value="${authNick}"/>`;
-	console.log(nickName);
+	const id = `<c:out value="${authId}"/>`;
+	console.log(id);
 </script>
 <script type="text/javascript">
 	const keyword = `<c:out value="${keyword}" />`;

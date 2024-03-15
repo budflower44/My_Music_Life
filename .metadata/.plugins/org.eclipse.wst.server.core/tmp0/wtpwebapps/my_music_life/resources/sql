@@ -169,3 +169,25 @@ auth varchar(100) not null
 -- auth_member에 member nick_name 외래키 추가
 alter table auth_member add constraint fk_auth foreign key(nick_name) references member(nick_name);
 
+<2024-03-14>
+-- member, auth_member 테이블 drop 후 재생성
+drop table auth_member;
+drop table member;
+
+-- member 테이블 재생성
+create table member(
+id varchar(255) not null,
+pwd varchar(255) not null, 
+nick_name varchar(255) not null,
+reg_at datetime default now(),
+mod_at datetime default now(),
+primary key(id));
+
+-- auth_member 테이블 재생성
+create table auth_member(
+id varchar(255) not null,
+auth varchar(100) not null
+);
+
+-- auth_member에 member id 외래키 추가
+alter table auth_member add constraint fk_auth foreign key(id) references member(id);

@@ -15,9 +15,9 @@ import lombok.ToString;
 @Getter
 public class MemberVO {
 	
-	private String nickName;
 	private String id;
 	private String pwd;
+	private String nickName;
 	private String regAt;
 	private String modAt;
 	private List<AuthVO> authList;
@@ -27,10 +27,10 @@ public class MemberVO {
 		this.pwd = pwd;
 	}
 
-	public MemberVO(String nickName, String id, String pwd) {
-		this.nickName = nickName;
+	public MemberVO(String id, String pwd, String nickName) {
 		this.id = id;
 		this.pwd = pwd;
+		this.nickName = nickName;
 	}
 	
 	

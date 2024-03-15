@@ -8,6 +8,6 @@ public interface MemberService {
 
 	String getPwd(String id);
 
-	boolean updateLastLogin(String authNick);
+	boolean updateLastLogin(String id);
 
 }

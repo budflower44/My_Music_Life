@@ -1,9 +1,7 @@
 package com.mml.www.config;
 
-import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
+import org.springframework.web.filter.RequestContextFilter;
 
 import com.mml.www.security.CustomAuthMemberService;
 import com.mml.www.security.LoginFailHandler;
@@ -49,13 +49,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		return new CustomAuthMemberService(); //직접 생성
 	}
 
-
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		// 인증되는 객체 설정
+		auth.userDetailsService(customUserService()).passwordEncoder(bcPasswordEncoder());
+	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// 화면에서 설정되는 권한에 따른 주소 맵핑 설정
 		//csrf() 공격에 대한 설정 막기
 		http.csrf().disable();
-		
+				
 		//승인 요청
 		http.authorizeRequests().antMatchers("/member/list").hasRole("ADMIN")
 			.antMatchers("/", "/mml/**", "/resources/**", "/comment/**", "/member/**").permitAll()
@@ -64,12 +69,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		//커스텀 로그인 페이지를 구성
 		//Controller에 주소 요청 매핑이 같이 있어야 함. (필수)
 		http.formLogin()
-		.usernameParameter("nickNmae")
+		.usernameParameter("id")
 		.passwordParameter("pwd")
 		.loginPage("/member/login")
-		.loginProcessingUrl("/login")
+		.loginProcessingUrl("/member/login")
 		.successHandler(authSucessHandler())
-		.failureHandler(authFailureHandler());
+		.failureHandler(authFailureHandler())
+		.permitAll();
 		
 		//로그아웃 페이지
 		//반드시 method = "post" (다른 method 인지 불가)
@@ -78,16 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.invalidateHttpSession(true)
 		.logoutSuccessUrl("/");
 		
+	
 	}
-	
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		// 인증되는 객체 설정
-		auth.userDetailsService(customUserService()).passwordEncoder(bcPasswordEncoder());
-	}
-	
-	
-	
-	
 	
 }
