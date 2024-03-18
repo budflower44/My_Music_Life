@@ -251,20 +251,26 @@ a:hover {
 				<div class="navDiv">
 					<nav class="navbar border-bottom border-body" data-bs-theme="dark">
 						<ul class="nav nav-underline justify-content-end">
-							<li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-							<li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+							<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+							<sec:authorize access="isAnonymous()">
+							<li class="nav-item"><a class="nav-link" href="#" id="navLoginTag">Login</a></li>
+							</sec:authorize>
 							<sec:authorize access="isAuthenticated()">
 								<sec:authentication property="principal.mvo.nickName" var="authNick"/>
 								<sec:authentication property="principal.mvo.id" var="authId"/>
 								<sec:authentication property="principal.mvo.authList" var="auths"/>
-							<li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
-							<form action="/member/logout" method="post" id="logoutFrom">
-								<input type="hidden" name="nickName" value="authNick">
+								<sec:authentication property="principal.mvo.regAt" var="authRegAt"/>
+							<li class="nav-item"><a class="nav-link" href="#" id="logoutLink">Logout</a></li>
+							<form action="/member/logout" method="post" id="logoutForm">
+								<input type="hidden" name="id" value="${authId}">
 							</form>
-							<c:choose>
-							<c:when test="${auths.stream().anyMath(authVO -> authVO.auth.equals('ROLE_ADMIN')).get()}">
+  							<c:choose>
+							<c:when test="${auths.stream().anyMatch(authVO -> authVO.auth.equals('ROLE_ADMIN')).get()}">
 							<li class="nav-item"><a class="nav-link" href="#">Member List</a></li>
 							</c:when>
+							<c:otherwise>							
+							<li class="nav-item"><a class="nav-link" href="#">Profile Modify</a></li>
+							</c:otherwise>
 							</c:choose>
 							</sec:authorize>
 						</ul>
@@ -281,12 +287,14 @@ a:hover {
 			<div class="userImgDiv">
 				<img alt="profileImg" id="profileImg" src="/resources/images/스쿠나.gif" style="height:100%; width:100%;">
 			</div>
+			<sec:authorize access="isAuthenticated()">
 			<div class="userDetailInfoDiv">
-				<a href="#"><h3>Nick_name ${nick_name }</h3></a>
-				<p>ID : ${ses.id}</p>
-				<p>최근 접속 : ${release_date}</p>
+				<a href="#"><h3>${authNick}</h3></a>
+				<p>ID : ${authId}</p>
+				<p>최근 접속 : ${authRegAt}</p>
 				<button id="logout" class="danger">Logout</button>
 			</div>
+			</sec:authorize>
 		</div>
 		<div class="contentsDiv">
 			<div class="contentDiv">
@@ -327,6 +335,15 @@ a:hover {
 <script type="text/javascript">
 	search(keyword);
 </script>
+<sec:authorize access="isAuthenticated()">
+<script type="text/javascript">
+	document.getElementById('logoutLink').addEventListener('click', (e)=>{
+	    //원래 기능 실행하지 마
+	    e.preventDefault();
+	    document.getElementById('logoutForm').submit();
+	})
+</script>
+</sec:authorize>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
 
 </body>

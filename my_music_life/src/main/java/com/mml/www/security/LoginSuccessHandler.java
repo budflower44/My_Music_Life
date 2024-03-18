@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -50,7 +51,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 			Authentication authentication) throws IOException, ServletException {
 		//Authentication 인증된 auth_member의 객체
 		setAuthId(authentication.getName());
-		setAuthUrl("/mml/main/{keyword}");
+		setAuthUrl("/");
 		
 		boolean isOk = msv.updateLastLogin(getAuthId());
 		

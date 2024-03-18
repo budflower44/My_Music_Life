@@ -49,7 +49,7 @@ public class MemberController {
 			String id = (String) mvoMap.get("id");
 			String pwd = (String) mvoMap.get("pwd");
 			
-			MemberVO mvo = new MemberVO(nickName, id, bcEncoder.encode(pwd));
+			MemberVO mvo = new MemberVO(id, bcEncoder.encode(pwd), nickName);
 			
 			int isOk = msv.memberInsert(mvo);
 			

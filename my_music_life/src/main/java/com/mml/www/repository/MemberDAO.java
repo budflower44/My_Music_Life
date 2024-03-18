@@ -13,7 +13,7 @@ public interface MemberDAO {
 
 	String getPwd(String id);
 
-	MemberVO selectNickName(String username);
+	MemberVO selectId(String username);
 
 	List<AuthVO> selectAuths(String username);
 

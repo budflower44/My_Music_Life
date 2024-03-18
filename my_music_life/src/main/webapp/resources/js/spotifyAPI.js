@@ -185,6 +185,14 @@ function search(keyword){
                                 url = res.albums.items[0].external_urls.spotify;
                                 embedUrl = url.match(/\/album\/(\w+)/)[0];
                             alubmsEmbedFrom(artistsUri, artistsName, albumType, releaseDate, name, embedUrl, id, uri);
+                            // //댓글 DB에서 받아오기
+                            // getCommentToServer(id).then(result=>{
+                            //     console.log(result);
+                            //     //댓글 뿌리기
+                            //     for(let cvo of result){
+                            //        commentContents(fileName, cvo.writer, cvo.content);
+                            //     }
+                            // })
                             embedFromPlayer(embedUrl);
                             getContentInfoAlbumToServer(id).then(album =>{
                                 console.log(album);
@@ -409,6 +417,7 @@ document.getElementById('searchBox').addEventListener('click', (e)=>{
                 let likes = album.likes;       
                 detailFromAlbum(images_url, name, artist_name, release_date, total_tracks, likes);
                 //댓글
+                //비로그인 상태에서 댓글 입력란 focus 시 로그인 로직 구현
                 console.log(id);
                 if(id.length <= 0 || id == null || id == ''){
                     let cmtText = document.getElementById('cmtText');
@@ -451,7 +460,7 @@ document.getElementById('searchBox').addEventListener('click', (e)=>{
                             })
                         }  
                     }else{
-
+                        
                     }
                 })
                 //추후 프로필 이미지 가져오기 작업 해야함
@@ -543,19 +552,6 @@ function detailFromAlbum(images_url, name, artist_name, release_date, total_trac
         <p>Total Tracks : ${total_tracks}</p>			
     </div>
     `;
-    // div.innerHTML += `
-    // <div class="contentImageDiv">
-    //     <img alt="" src="${images_url}" style="height:200px; width:200px;">
-    // </div>
-    // <div class="contentInfoDetailDiv">
-    //     <p>Album Name : ${name}</p>
-    //     <p>Artist Name : ${artist_name}</p>
-    //     <p>Release Date : ${release_date}</p>
-    //     <p>Total Tracks : ${total_tracks}</p>
-    //     <p>likes : ${likes}</p>
-    //     <button class="likesBtn">♡</button>					
-    // </div>
-    // `;
 }
 
 //Artist -> DB 데이터 가져오기
@@ -836,7 +832,6 @@ function loginProcess(){
             }else{
                 loginDiv.style.display = 'none';
                 search(keyword);
-                cmtText.disabled = false;
                 let localIdVal = localStorage.getItem('idVal');
                 console.log(localIdVal);
                 let sesKeywordVal = sessionStorage.getItem('keywordVal');
@@ -848,6 +843,7 @@ function loginProcess(){
                         })
                     }
                 }
+                location.replace("/mml/main/"+keyword);
             }
         })
     })
@@ -896,6 +892,7 @@ async function login(id, pwd){
         };
         const res = await fetch(url, config);
         const result = await res.text();
+
         console.log(result);
         return result;
     } catch (error) {
@@ -903,5 +900,12 @@ async function login(id, pwd){
     }
 }
 
-
+//Nav 로그인 버튼 로직
+document.getElementById('navLoginTag').addEventListener('click', async (e)=>{
+    e.preventDefault();
+    let loginDiv = document.querySelector('.loginDiv');
+    loginDiv.style.display = 'block';
+    loginFrom();
+    loginProcess();
+})
 

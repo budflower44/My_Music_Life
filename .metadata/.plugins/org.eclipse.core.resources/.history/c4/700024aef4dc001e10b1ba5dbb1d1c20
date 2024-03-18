@@ -1,9 +1,0 @@
-package com.mml.www.domain;
-
-public class AuthVO {
-	
-	private String nickName;
-	private String auth;
-	
-	
-}

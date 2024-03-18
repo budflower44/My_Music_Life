@@ -2,6 +2,7 @@ package com.mml.www.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,8 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
-import org.springframework.web.filter.RequestContextFilter;
 
 import com.mml.www.security.CustomAuthMemberService;
 import com.mml.www.security.LoginFailHandler;
@@ -84,7 +83,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.invalidateHttpSession(true)
 		.logoutSuccessUrl("/");
 		
-	
 	}
 	
 }
