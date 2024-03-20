@@ -12,9 +12,9 @@ import java.io.IOException;
 @Configuration
 public class AuthSpotifyAPIConfig {
 	
-  private static final String clientId = "7018fc47d1cb49bba23cee1e5c702d60";
+  private static final String clientId = "";
   
-  private static final String clientSecret = "7c1006ea22e04ce0888c4bb616a68537";
+  private static final String clientSecret = "";
 
   private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
     .setClientId(clientId)

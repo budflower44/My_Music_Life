@@ -38,9 +38,9 @@ public class SpotifyAPIController {
 	
 	private SpotifyApi spotifyApi;
 	
-	private String clientId = "7018fc47d1cb49bba23cee1e5c702d60";
+	private String clientId = "";
 
-	private String clientSecret = "7c1006ea22e04ce0888c4bb616a68537";
+	private String clientSecret = "";
 
 	private String redirectUri = "http://localhost:8088/callback";
 	

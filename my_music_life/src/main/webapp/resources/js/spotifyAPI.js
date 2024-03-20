@@ -431,7 +431,7 @@ document.getElementById('searchBox').addEventListener('click', (e)=>{
                 }
                 //댓글 post 기능 + 추후 enter 기능도 추가
                 document.getElementById('cmtPostBtn').addEventListener('click', ()=>{
-                    if(sesId != null){
+                    if(id != null){
                         let cmtText = document.getElementById('cmtText');
                         if(cmtText.value == null || cmtText.value == ''){
                             alert('댓글을 입력해주세요.');

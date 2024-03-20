@@ -78,11 +78,17 @@ body{
 	justify-content: space-between;
 	overflow: scroll;
 }
+.contentsDiv::-webkit-scrollbar{
+	display: none;
+}
 .contentDiv{
 	width: 100%;
 	height: calc(100vw-550px);
 	overflow: scroll;
 	align-items: flex-start;
+}
+.contentDiv::-webkit-scrollbar{
+	display: none;
 }
 .contentDetailsDiv{
 	position: sticky;
@@ -120,6 +126,9 @@ body{
 	align-items: center;
 	flex-direction: column;
 	overflow: scroll;
+}
+.contentCommentDiv::-webkit-scrollbar{
+	display: none;
 }
 .commentInputDiv{
 	width: 90%;
@@ -260,12 +269,13 @@ a:hover {
 								<sec:authentication property="principal.mvo.id" var="authId"/>
 								<sec:authentication property="principal.mvo.authList" var="auths"/>
 								<sec:authentication property="principal.mvo.regAt" var="authRegAt"/>
-							<li class="nav-item"><a class="nav-link" href="#" id="logoutLink">Logout</a></li>
+							<li class="nav-item"><a class="nav-link" href="#" id="logout">Logout</a></li>
 							<form action="/member/logout" method="post" id="logoutForm">
 								<input type="hidden" name="id" value="${authId}">
 							</form>
   							<c:choose>
 							<c:when test="${auths.stream().anyMatch(authVO -> authVO.auth.equals('ROLE_ADMIN')).get()}">
+							<li class="nav-item"><a class="nav-link" href="#">Profile Modify</a></li>
 							<li class="nav-item"><a class="nav-link" href="#">Member List</a></li>
 							</c:when>
 							<c:otherwise>							
@@ -285,14 +295,23 @@ a:hover {
 	<div class="midDiv">
 		<div class="userDetailDiv">
 			<div class="userImgDiv">
-				<img alt="profileImg" id="profileImg" src="/resources/images/스쿠나.gif" style="height:100%; width:100%;">
+				<img alt="profileImg" id="profileImg" src="/resources/images/no_thumbnail.png" style="height:100%; width:100%;">
 			</div>
+			<sec:authorize access="isAnonymous()">
+			<div class="userDetailInfoDiv">
+				<a href="#"><h3>Nick Name : Empty</h3></a>
+				<p> Please login. </p>
+			</div>
+			</sec:authorize>
 			<sec:authorize access="isAuthenticated()">
 			<div class="userDetailInfoDiv">
 				<a href="#"><h3>${authNick}</h3></a>
 				<p>ID : ${authId}</p>
 				<p>최근 접속 : ${authRegAt}</p>
 				<button id="logout" class="danger">Logout</button>
+				<form action="/member/logout" method="post" id="logoutForm">
+					<input type="hidden" name="id" value="${authId}">
+				</form>
 			</div>
 			</sec:authorize>
 		</div>
@@ -337,7 +356,7 @@ a:hover {
 </script>
 <sec:authorize access="isAuthenticated()">
 <script type="text/javascript">
-	document.getElementById('logoutLink').addEventListener('click', (e)=>{
+	document.getElementById('logout').addEventListener('click', (e)=>{
 	    //원래 기능 실행하지 마
 	    e.preventDefault();
 	    document.getElementById('logoutForm').submit();
